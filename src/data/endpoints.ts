@@ -4,19 +4,22 @@ export interface ApiEndpoint {
   name: string;
   method: HttpMethod;
   path: string;
-  tag: string;
 }
+
+export type GroupedEndpoints = Record<string, ApiEndpoint[]>;
 
 export const BASE_URL = "https://api.ness.biz.id";
 
-export async function fetchEndpoints(): Promise<ApiEndpoint[]> {
+export async function fetchEndpoints(): Promise<GroupedEndpoints> {
   const res = await fetch(`${BASE_URL}/list`, {
     cache: "no-store",
   });
 
   if (!res.ok) {
-    throw new Error("Failed to fetch API list");
+    throw new Error(`Failed to fetch API list: ${res.status}`);
   }
 
-  return res.json();
+  const data: GroupedEndpoints = await res.json();
+
+  return data;
 }
